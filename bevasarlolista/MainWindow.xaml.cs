@@ -195,5 +195,71 @@ namespace bevasarlolista
                 MessageBox.Show("Van nulla Ft-os termék.");
             }
         }
+        private void kenyerek(object sender, RoutedEventArgs e)
+        {
+            dataGrid.ItemsSource = termekek.Where(x => x.Nev.Contains("Kenyer")).OrderByDescending(c => c.Ár);
+
+        }
+
+        private void egyezoAr(object sender, RoutedEventArgs e)
+        {
+            var egyformak = termekek.GroupBy(x => x.Ár)
+                .Select(g => new { darab = g.Count() })
+                .Any(z => z.darab > 1);
+
+            if (egyformak == true)
+            {
+                MessageBox.Show($"Van olyan adataink, amelyeknek megeggyezik az ára!");
+            }
+            else
+            {
+                MessageBox.Show($"Nincs olyan adat amely egy másik adat árával megeggyezne, mind egyedi");
+            }
+        }
+
+        private void Valtozas(object sender, TextChangedEventArgs e)
+        {
+            dataGrid.ItemsSource = termekek.Where(t => t.Nev.ToLower().Contains(textBox.Text.ToLower())).ToList();
+        }
+
+        private void egyezo(object sender, RoutedEventArgs e)
+        {
+            dataGrid.ItemsSource = termekek
+                .GroupBy(t => t.Nev)
+                .Where(t => t.Count() > 1)
+                .SelectMany(t => t);
+        }
+
+        private void dataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dataGrid.SelectedItem is ItemModel selectedItem)
+            {
+
+                priceProgressBar.Value = selectedItem.Ár;
+            }
+        }
+
+        private void nemc(object sender, RoutedEventArgs e)
+        {
+            dataGrid.ItemsSource = termekek.Where(t => t.Kategória != "C");
+        }
+
+        private void nevHosszSzerint(object sender, RoutedEventArgs e)
+        {
+            dataGrid.ItemsSource = termekek.OrderBy(x => x.Nev.Length);
+        }
+
+        private void aTipusOsszAr(object sender, RoutedEventArgs e)
+        {
+            dataGrid.ItemsSource = termekek
+                .Where(t => t.Kategória == "A")
+                .OrderBy(t => t.Nev)
+                .Select(t => new
+                {
+                    Kategória = t.Kategória,
+                    Név = t.Nev,
+                    Összes = t.Összesen
+                });
+        }
     }
 }
